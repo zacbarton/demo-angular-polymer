@@ -1,1 +1,54 @@
-angular-polymer
+<!DOCTYPE html>
+<html ng-app="Todo">
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+		
+		<!-- scripts -->
+		<script src="bower_components/platform/platform.js"></script>
+		<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.18/angular.min.js"></script>
+		<script src="javascript/app.js"></script>
+		<script src="javascript/bindPolymer.js"></script>
+		
+		<!-- styles -->
+		<link rel="stylesheet" href="css/app.css" />
+		<link href='//fonts.googleapis.com/css?family=RobotoDraft:regular,bold,italic,thin,light,bolditalic,black,medium&lang=en' rel='stylesheet' type='text/css'>
+		
+		<!-- polymer -->
+		<link rel="import" href="polymer/responsive-layout/responsive-layout.html" />
+		
+		<link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html" />
+		<link rel="import" href="bower_components/core-item/core-item.html" />
+		<link rel="import" href="bower_components/paper-input/paper-input.html" />
+		<link rel="import" href="bower_components/paper-fab/paper-fab.html" />
+		<link rel="import" href="bower_components/paper-item/paper-item.html" />
+		<link rel="import" href="bower_components/paper-checkbox/paper-checkbox.html" />
+	</head>
+	<body unresolved ng-controller="Test">
+		<responsive-layout fit label="Todos" responsiveWidth="920px">
+			<paper-icon-button class="menuButton" icon="menu" role="button" tabindex="0" pressed active></paper-icon-button>
+			<core-item label="Active" tag="active" url="home.html" horizontal center layout></core-item>
+			<core-item label="Completed" tag="completed" url="home.html" horizontal center layout></core-item>
+			
+			<div class="content">
+				<!-- hacky view switching -->
+				<section ng-if="view == 'active'">
+					<form name="todoForm" ng-submit="add()">
+						<paper-input floatinglabel label="What needs to be done?" bind-polymer ng-model="$parent.input" required ng-class="{green: todoForm.$valid}"></paper-input>
+						<paper-fab icon="{{icon}}" ng-click="add()" ng-class="{green: icon == 'check'}"></paper-fab>
+					</form>
+					<paper-item center horizontal layout ng-repeat="item in items">
+	             		<paper-checkbox bind-polymer ng-model="item.done"></paper-checkbox>
+	            		<div flex>
+	            			{{item.text}}
+	            			<time>{{item.timestamp | date:'medium'}}</time>
+	            		</div>
+	            	</paper-item>
+				</section>
+				
+				<section ng-if="view == 'completed'">
+					todo
+				</section>
+			</div>
+		</responsive-layout>
+	</body>
+</html>
