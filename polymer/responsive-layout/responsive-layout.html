@@ -52,7 +52,7 @@ based off sampler-scaffold
       this.boundResizeFrame = this.resizeFrame.bind(this);
       window.addEventListener('resize', this.updateFrameHeight.bind(this));
       window.addEventListener('hashchange', this.parseLocationHash.bind(this));
-this.$.mainHeaderPanel.$.mainContainer.style.overflowY = "scroll";
+      this.resizeFrame();
     },
     
     domReady: function() {
@@ -79,8 +79,8 @@ this.$.mainHeaderPanel.$.mainContainer.style.overflowY = "scroll";
           this.item.selected = 0;
         }
         this.item.tag = this.item.getAttribute('tag');
-      //  var url = this.item.getAttribute('url');
-      //  this.$.frame.contentWindow.location.replace(url);
+        // var url = this.item.getAttribute('url');
+        // this.$.frame.contentWindow.location.replace(url);
         window.location.hash = this.item.tag;
         if (this.narrow) {
           this.$.drawerPanel.closeDrawer();
@@ -119,18 +119,7 @@ this.$.mainHeaderPanel.$.mainContainer.style.overflowY = "scroll";
     togglePanel: function() {
       this.$.drawerPanel.togglePanel();
     },
-    
-    frameLoaded: function() {
-      if (!this.item) {
-        return;
-      }
-      this.$.frame.contentWindow.addEventListener('polymer-ready', function() {
-        setTimeout(this.updateFrameHeight.bind(this), 100);
-        this.$.frame.contentWindow.addEventListener('core-resize',
-          this.boundResizeFrame, false);
-      }.bind(this));
-    },
-
+	
     resizeFrame: function() {
       this.job('resizeFrame', function() {
         this.updateFrameHeight();
@@ -138,24 +127,7 @@ this.$.mainHeaderPanel.$.mainContainer.style.overflowY = "scroll";
     },
     
     updateFrameHeight: function() {
-return;
-      var frame = this.$.frame;
-      var doc = frame.contentDocument;
-      if (doc) {
-        var docElt = doc.documentElement;
-        // TODO(ffu); expose scroll info from header-panel
-        var pos = this.$.mainHeaderPanel.$.mainContainer.scrollTop;
-        frame.style.height = 'auto';
-        frame.style.height = docElt.scrollHeight + 'px';
-        if (doc.body) {
-          var s = doc.body.style;
-          s.overflow = 'hidden';
-          // to avoid the 'blinking bug'
-          // https://code.google.com/p/chromium/issues/detail?id=332024
-          s.webkitTransform = s.transform = 'translateZ(0)';
-        }
-        this.$.mainHeaderPanel.$.mainContainer.scrollTop = pos;
-      }
+    	this.$.mainHeaderPanel.$.mainContainer.style.overflowY = (this.$.drawerPanel.narrow) ? "hidden" : "scroll";
     }
   });
 </script>

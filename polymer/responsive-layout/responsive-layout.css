@@ -78,6 +78,13 @@ polyfill-next-selector { content: 'core-menu#menu core-item.core-selected'; }
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
   border-radius: 2px;
   overflow: hidden;
+  
+  width: 100%;
+  max-width: 720px;
+  min-height: 500px;
+  
+  margin-right: 10%;
+  position: relative;
 }
 
 #card[hidden] {
@@ -87,32 +94,6 @@ polyfill-next-selector { content: 'core-menu#menu core-item.core-selected'; }
 #card.move-up {
   transition: -webkit-transform 0.38s cubic-bezier(0.4, 0.0, 0.2, 1);
   transition: transform 0.38s cubic-bezier(0.4, 0.0, 0.2, 1);
-}
-
-polyfill-next-selector { content: '.sourceButton';}
-::content .sourceButton {
-  position: absolute;
-  z-index: 1;
-}
-
-polyfill-next-selector { content: '.sourceButton:not(.fallback)';}
-::content .sourceButton:not(.fallback) {
-  background-color: #fcfcfc;
-  fill: #666464;
-  bottom: -28px;
-  right: 24px;
-}
-
-polyfill-next-selector { content: '.sourceButton.fallback';}
-::content .sourceButton.fallback {
-  right: 24px;
-  top: 13px;
-}
-
-
-polyfill-next-selector { content: '#drawerPanel[narrow] .sourceButton:not(.fallback)';}
-#drawerPanel[narrow] ::content .sourceButton:not(.fallback) {
-  right: 8px;
 }
 
 polyfill-next-selector { content: '#drawerPanel:not([narrow]) .menuButton';}
@@ -144,6 +125,8 @@ polyfill-next-selector { content: '#drawerPanel:not([narrow]) .menuButton';}
   right: 0;
   bottom: 0;
   left: 0;
+  
+  max-width: 100%;
 }
 
 #drawerPanel[narrow] #frame {
@@ -157,4 +140,7 @@ polyfill-next-selector { content: '#drawerPanel:not([narrow]) .menuButton';}
   bottom: 0;
   left: 0;
   overflow: auto;
+  
+  padding-top: 24px;
+  overflow-y: scroll;
 }

@@ -1,14 +1,60 @@
-angular.module("zacbarton.directives", []).directive("bindPolymer", function($q, $timeout) {
-	var polymerReady = false;
+angular.module("zacbarton.bindPolymer", []).directive("bindPolymer", function($timeout) {
 	var debug = false;
+	var polymerReady = false;
+	
+	document.addEventListener("polymer-ready", function() {
+		polymerReady = true;
+	});
 	
 	return {
 		require: "ngModel"
 		, restrict: "A"
-		, link: function(scope, element, attrs, ngModel) {
+		, link: function link(scope, element, attrs, ngModel) {
 			if (!ngModel)
 				return;
 			
+			if (!polymerReady) {
+				return $timeout(function() {
+					link(scope, element, attrs, ngModel);
+				}, 100);
+			}
+			
+			switch (element[0].nodeName) {
+				case "PAPER-INPUT":
+					bindAngularAndPolymer("inputValue");
+					
+					// not sure why we really need to do this?!?
+					element.on("keydown", function(event) {
+						switch (event.keyCode) {
+							case 13: // return
+								if (ngModel.$invalid) return;
+								
+								$timeout(function() {
+									var action = getForm(element).attr("ng-submit");
+									scope.$eval(action);
+								});
+								break;
+							
+							case 8: // backspace
+								if (ngModel.$modelValue) {
+									$timeout(function() {
+										ngModel.$modelValue.slice(0, -1);
+									});
+								}
+								
+								event.stopPropagation();
+								return false;
+								break;
+						}
+					});
+					break;
+				
+				case "PAPER-CHECKBOX":
+					bindAngularAndPolymer("checked");
+					break;
+			}
+			
+			// helpers
 			function getForm(element) {
 				var form = element[0];
 				
@@ -26,82 +72,35 @@ angular.module("zacbarton.directives", []).directive("bindPolymer", function($q,
 				return angular.element(form);
 			}
 			
-			function bootstrap() {
-				var nodeName = element[0].nodeName;
-				var observer2;
-				var observer;
+			function bindAngularAndPolymer(polymerValue) {
+				var observer = new PathObserver(element[0], polymerValue);
 				
-				switch (nodeName) {
-					case "PAPER-INPUT":
-						element[0].value = ngModel.$modelValue;
-						
-						// hack to submit on "enter"
-						observer2 = new PathObserver(element[0], 'value');
-						observer2.open(function(newValue, oldValue) {
-							if (ngModel.$invalid) return;
-							
-							var action = getForm(element).attr('ng-submit');
-							
-							$timeout(function() {
-								scope.$eval(action);
-							});
-						});
-						
-						observer = new PathObserver(element[0], 'inputValue');
-						observer.open(function(newValue, oldValue) {
-							if (ngModel.$modelValue === newValue) return;
-							
-							$timeout(function() {
-								if (debug) console.log(Date.now(), 'input - setting model', newValue, oldValue);
-								
-								ngModel.$setViewValue(newValue);
-							}, 0);
-						});
-						
-						scope.$watch(function(){ return ngModel.$modelValue;}, function(newValue, oldValue) {
-							if (element[0].inputValue === ngModel.$modelValue) return;
-							
-							if (debug) console.log(Date.now(), 'input - setting value', newValue, oldValue);
-							
-							element[0].inputValue = newValue;
-						});
-						break;
+				observer.open(function(newValue, oldValue) {
+					if (ngModel.$modelValue === newValue) {
+						return;
+					}
 					
-					case "PAPER-CHECKBOX":
-						element[0].checked = ngModel.$modelValue;
-						
-						observer = new PathObserver(element[0], 'checked');
-						observer.open(function(newValue, oldValue) {
-							if (ngModel.$modelValue === newValue) return;
-							
-							$timeout(function() {
-								if (debug) console.log(Date.now(), 'checkbox - setting model', newValue, oldValue);
-								
-								ngModel.$setViewValue(newValue);
-							}, 0);
-						});
-						
-						scope.$watch(function(){ return ngModel.$modelValue;}, function(newValue, oldValue) {
-							if (element[0].checked === ngModel.$modelValue) return;
-							
-							if (debug) console.log(Date.now(), 'checkbox - setting value', newValue, oldValue);
-							
-							element[0].checked = newValue;
-						});
-						break;
-				}
-			}
-			
-			if (!polymerReady) {
-				document.addEventListener('polymer-ready', function() {
-					polymerReady = true;
-					bootstrap();
+					$timeout(function() {
+						ngModel.$setViewValue(newValue);
+					}, 0);
+					
+					if (debug) console.log(element[0], "setting angular model", newValue);
 				});
-			} else {
-				bootstrap();
+				
+				scope.$watch(function(){ return ngModel.$modelValue; }, function(newValue, oldValue) {
+					if (element[0][polymerValue] === ngModel.$modelValue) {
+						return;
+					}
+					
+					element[0][polymerValue] = newValue;
+					
+					if (debug) console.log(element[0], "setting polymer " + polymerValue, newValue);
+				});
+				
+				scope.$on("$destroy", function() {
+					observer.close();
+				});
 			}
-			
-			// TODO do destroy observer(s) on scope destroy
 		}
 	};
 });

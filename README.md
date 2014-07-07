@@ -1,7 +1,7 @@
 demo-angular-polymer
 ====================
 
-Simple demo using Polymer elements with Angular. 
+Simple demo using Polymer/material-deisgn elements with Angular.
 
 It's unfinished (i.e. still has bugs) and has only been tested in Chrome. Do try resizing the window though.
 

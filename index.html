@@ -1,52 +1,66 @@
 <!DOCTYPE html>
-<html ng-app="Todo">
+<html ng-app="Demo">
 	<head>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
 		
 		<!-- scripts -->
 		<script src="bower_components/platform/platform.js"></script>
 		<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.18/angular.min.js"></script>
+		<script src="javascript/ngStorage.min.js"></script>
 		<script src="javascript/app.js"></script>
 		<script src="javascript/bindPolymer.js"></script>
 		
 		<!-- styles -->
 		<link rel="stylesheet" href="css/app.css" />
-		<link href='//fonts.googleapis.com/css?family=RobotoDraft:regular,bold,italic,thin,light,bolditalic,black,medium&lang=en' rel='stylesheet' type='text/css'>
+		<link rel="stylesheet" href="//fonts.googleapis.com/css?family=RobotoDraft:regular,bold,thin,light,medium" />
 		
 		<!-- polymer -->
 		<link rel="import" href="polymer/responsive-layout/responsive-layout.html" />
-		
-		<link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html" />
 		<link rel="import" href="bower_components/core-item/core-item.html" />
-		<link rel="import" href="bower_components/paper-input/paper-input.html" />
 		<link rel="import" href="bower_components/paper-fab/paper-fab.html" />
 		<link rel="import" href="bower_components/paper-item/paper-item.html" />
+		<link rel="import" href="bower_components/paper-input/paper-input.html" />
 		<link rel="import" href="bower_components/paper-checkbox/paper-checkbox.html" />
+		<link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html" />
 	</head>
-	<body unresolved ng-controller="Test">
-		<responsive-layout fit label="Todos" responsiveWidth="920px">
+	<body unresolved ng-controller="Todo">
+		<responsive-layout fit label="Angular &amp; Polymer Demo" responsiveWidth="920px">
 			<paper-icon-button class="menuButton" icon="menu" role="button" tabindex="0" pressed active></paper-icon-button>
-			<core-item label="Active" tag="active" url="home.html" horizontal center layout></core-item>
-			<core-item label="Completed" tag="completed" url="home.html" horizontal center layout></core-item>
+			<core-item label="Todos" tag="todos" horizontal center layout></core-item>
+			<core-item label="Kitchen Sink" tag="sink" horizontal center layout></core-item>
 			
 			<div class="content">
 				<!-- hacky view switching -->
-				<section ng-if="view == 'active'">
+				<section ng-if="view == 'todos'">
 					<form name="todoForm" ng-submit="add()">
 						<paper-input floatinglabel label="What needs to be done?" bind-polymer ng-model="$parent.input" required ng-class="{green: todoForm.$valid}"></paper-input>
+						<!-- {{$parent.input}} -->
 						<paper-fab icon="{{icon}}" ng-click="add()" ng-class="{green: icon == 'check'}"></paper-fab>
 					</form>
-					<paper-item center horizontal layout ng-repeat="item in items">
+					<!-- {{items}} -->
+					<paper-item center horizontal layout ng-repeat="item in items" ng-class="{completed: item.done}">
 	             		<paper-checkbox bind-polymer ng-model="item.done"></paper-checkbox>
-	            		<div flex>
-	            			{{item.text}}
-	            			<time>{{item.timestamp | date:'medium'}}</time>
+             			<div flex>
+	             			<div horizontal layout ng-if="!item.edit">
+		            			<div flex class="fakeinput">
+		            				{{item.text}}
+		            				<time>{{item.timestamp | date:'medium'}}</time>
+		            			</div>
+		            			<paper-icon-button icon="create" ng-click="edit(item, true)" ng-if="!item.done"></paper-icon-button>
+		            			<paper-icon-button icon="delete" ng-click="remove(item)" ng-if="item.done"></paper-icon-button>
+		            		</div>
+		            		<div ng-if="item.edit">
+		            			<form ng-submit="edit(item, false)">
+		            				<input ng-model="item.text" autofocus />
+		            			</form>
+		            			<time>{{item.timestamp | date:'medium'}}</time>
+		            		</div>
 	            		</div>
 	            	</paper-item>
 				</section>
 				
-				<section ng-if="view == 'completed'">
-					todo
+				<section ng-if="view == 'sink'">
+					The Kitchen Sink demo
 				</section>
 			</div>
 		</responsive-layout>
