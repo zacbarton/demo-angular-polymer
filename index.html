@@ -22,6 +22,7 @@
 		<link rel="import" href="bower_components/paper-input/paper-input.html" />
 		<link rel="import" href="bower_components/paper-checkbox/paper-checkbox.html" />
 		<link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html" />
+		<link rel="import" href="bower_components/paper-toast/paper-toast.html" />
 	</head>
 	<body unresolved ng-controller="Todo">
 		<responsive-layout fit label="Angular &amp; Polymer Demo" responsiveWidth="920px">
@@ -38,7 +39,7 @@
 						<paper-fab icon="{{icon}}" ng-click="add()" ng-class="{green: icon == 'check'}"></paper-fab>
 					</form>
 					<!-- {{items}} -->
-					<paper-item center horizontal layout ng-repeat="item in items" ng-class="{completed: item.done}">
+					<paper-item center horizontal layout ng-repeat="item in storage.items" ng-class="{completed: item.done}">
 	             		<paper-checkbox bind-polymer ng-model="item.done"></paper-checkbox>
              			<div flex>
 	             			<div horizontal layout ng-if="!item.edit">
@@ -57,6 +58,10 @@
 		            		</div>
 	            		</div>
 	            	</paper-item>
+	            	
+	            	<paper-toast id="toast" class="capsule" text="Todo Deleted" opened="{{undoItem}}" duration="999999" responsiveWidth="920px" ng-if="undoItem">
+	            		<div ng-click="undo()">Undo</div>
+	            	</paper-toast>
 				</section>
 				
 				<section ng-if="view == 'sink'">

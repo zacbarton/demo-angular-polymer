@@ -99,11 +99,13 @@ paper-checkbox + div {
 	margin-left: 32px;
 }
 
-
-
 time {
 	color: gray;
 	display: block;
 	margin-top: 8px;
 	font-size: smaller;
+}
+
+paper-toast div {
+	color: #eeff41;
 }
